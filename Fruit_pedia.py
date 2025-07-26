@@ -1,4 +1,5 @@
 import tkinter as tk
+import cv2
 from tkinter import *
 from tkinter import (
     messagebox,
@@ -11,18 +12,13 @@ from tkinter import (
     scrolledtext,
     Frame,
 )
-import rich as r
-from rich import print as rprint
-from rich.text import Text
-from rich.console import Console
-from rich.panel import Panel
-from rich.progress import Progress
-from rich.prompt import Prompt
-from rich.table import Table
 import textwrap
+from PIL import ImageTk, Image
+
 
 window = Tk()
 window.config(bg="#6A0909")
+
 frutas = [
     ["gomu gomu", "ito ito", "bara bara", "yami yami"],
     ["kilo kilo", "sube sube", "bomu bomu", "gura gura"],
@@ -94,11 +90,29 @@ frutas = [
     ],
     ["uma uma (model: Donkey)", "uma uma (model: Mule)"],
 ]
-pnl = Frame(window, bg="black", bd=3, relief="groove", padx=5, pady=5)
+
+pnl = Frame(
+    window,
+    bg="black",
+    bd=3,
+    relief="groove",
+    padx=5,
+    pady=5,
+)
 btt3 = Button(
     pnl, text="ver sobre", bg="dark blue", fg="white", font=("Arial", 10, "bold")
 )
+
 fruta = frutas[0]
+
+teste = Image.open("img/Gomu Gomu.jpg").resize((200, 180)).convert("RGB")
+
+imagem_teste = ImageTk.PhotoImage(teste)
+
+infoPrin = textwrap.fill(
+    "seja bem-vindo à Fruit Pedia - One Piece! Aqui você encontrará informações sobre as frutas do diabo do universo One Piece.",
+    width=17,
+)
 
 maxximo = 1
 
@@ -108,7 +122,6 @@ def main():
     global window
     global frutas
     global fruta
-    global txt_fruit
     global btt
     global maxximo
     global btt3
@@ -489,7 +502,6 @@ def main():
         elif fruta == "jiki jiki":
             txt["text"] = "Jiki Jiki No Mi"
             info = "Permite controlar o magnetismo. Usuário: Eustass Kid."
-        # Adicione outros modelos e variações conforme necessário...
         elif fruta == "mushi mushi (model: kabutomushi)":
             txt["text"] = "Mushi Mushi no Mi, Modelo: Kabutomushi"
             info = "Permite se transformar em um besouro-rinoceronte. Usuário: Kabu."
@@ -724,6 +736,7 @@ window.title("Fruit Pedia - One Piece")
 window.grid_rowconfigure(1, weight=1)
 window.grid_columnconfigure(0, weight=1)
 window.geometry("500x300")
+window.resizable(False, False)
 
 paineu = Frame(window, bg="black", bd=3, relief="groove", padx=5, pady=5)
 txt = Label(
@@ -737,6 +750,17 @@ txt = Label(
 maxx = Label(window, text="", bg="#6A0909")
 btt = Button(window, text="catálogo", command=main, bg="dark blue", fg="white")
 
+telaImg = Label(pnl, image=imagem_teste, bg="black", bd=3, relief="groove")
+telaImg.pack(side="left", padx=(0, 10))
+telaText = Label(
+    pnl,
+    text=infoPrin,
+    fg="white",
+    bg="black",
+    font=("Arial", 16, "italic"),
+    justify="left",
+)
+telaText.pack(side="right", padx=(0, 10))
 
 btt.grid(row=3, column=1)
 maxx.grid(row=10, column=10)
