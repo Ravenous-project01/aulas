@@ -17,6 +17,7 @@ from PIL import ImageTk, Image
 
 window = Tk()
 window.config(bg="#6A0909")
+window.iconbitmap("img/icon.ico")
 
 frutas = [
     ["gomu gomu", "ito ito", "bara bara", "yami yami"],
