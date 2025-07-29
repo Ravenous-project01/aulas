@@ -1,18 +1,15 @@
 import tkinter as tk
 from tkinter import *
 from tkinter import (
-    messagebox,
-    filedialog,
     Tk,
     Label,
-    Entry,
     Button,
-    END,
-    scrolledtext,
     Frame,
 )
 import textwrap
 from PIL import ImageTk, Image
+import unicodedata
+import os
 
 
 window = Tk()
@@ -105,7 +102,7 @@ btt3 = Button(
 
 fruta = frutas[0]
 
-teste = Image.open("img/Gomu Gomu.jpg").resize((200, 180)).convert("RGB")
+teste = Image.open("img/gomu gomu no mi.jpg").resize((200, 180)).convert("RGB")
 
 imagem_teste = ImageTk.PhotoImage(teste)
 
@@ -129,6 +126,38 @@ def main():
     global btt2_1
     global btt2_2
     btt.grid_forget()
+
+    def normaliza_nome_imagem(fruta_nome):
+        # Remove acentos e deixa tudo minúsculo
+        def remove_acentos(txt):
+            return "".join(
+                c
+                for c in unicodedata.normalize("NFD", txt)
+                if unicodedata.category(c) != "Mn"
+            )
+
+        fruta_nome = fruta_nome.lower()
+        fruta_nome = remove_acentos(fruta_nome)
+        # Troca (model: X) por , model x
+        if "(model:" in fruta_nome:
+            base, modelo = fruta_nome.split("(model:")
+            base = base.strip()
+            modelo = modelo.replace(")", "").strip()
+            fruta_nome = f"{base} no mi, model {modelo}"
+        else:
+            fruta_nome = f"{fruta_nome} no mi"
+        fruta_nome = fruta_nome.replace("  ", " ")
+        return fruta_nome + ".jpg"
+
+    def get_image_for_fruit(fruta_nome):
+        nome_img = normaliza_nome_imagem(fruta_nome)
+        caminho = os.path.join("img", nome_img)
+        if os.path.exists(caminho):
+            return ImageTk.PhotoImage(
+                Image.open(caminho).resize((200, 180)).convert("RGB")
+            )
+        else:
+            return imagem_teste
 
     def catalogo():
         global fruta
@@ -322,6 +351,7 @@ def main():
 
         pnl2 = Frame(window, bg="black", bd=3, relief="groove", padx=5, pady=5)
         pnl2.grid(row=1, column=0, sticky="nsew")
+
         linha2 = Label(
             pnl2,
             text=f"{fruta}: \n\n",
@@ -640,6 +670,11 @@ def main():
 
         linha2["text"] = texto_larg
 
+        img_fruit = get_image_for_fruit(fruta)
+        telaImg = Label(pnl2, image=img_fruit, bg="black", bd=3, relief="groove")
+        telaImg.image = img_fruit  # Evita garbage collection
+        telaImg.pack(side="left", padx=(0, 10))
+
         back = Button(
             window,
             text="Voltar",
@@ -735,7 +770,7 @@ def main():
 window.title("Fruit Pedia - One Piece")
 window.grid_rowconfigure(1, weight=1)
 window.grid_columnconfigure(0, weight=1)
-window.geometry("500x300")
+window.geometry("550x400")
 window.resizable(False, False)
 
 paineu = Frame(window, bg="black", bd=3, relief="groove", padx=5, pady=5)
